@@ -11,7 +11,7 @@ import Werkzeug.Zeit;
 import java.awt.*;
 
 public class Knyacki {
-    private static Position position = new Position(50, 50);
+    private static Position position = new Position(Zeichner.PIXEL_BREITE / 2, Zeichner.PIXEL_BREITE / 2);
     private static Richtung richtung = Richtung.OBEN;
 
     private static final Color KOPF_FARBE = Farbe.GOLD;
@@ -29,12 +29,18 @@ public class Knyacki {
         bewegen();
 
         while (true) {
-            if (Zeichner.pixelLesen(Maus.position().x, Maus.position().y) == KÖRPER_FARBE) {
-                Zeichner.pixelSkizzieren(Maus.position().x, Maus.position().y, Farbe.ROT);
+            if (Zeichner.pixelLesen(Maus.position().x, Maus.position().y) == null) {
+                Zeichner.pixelSkizzieren(Maus.position().x, Maus.position().y, Farbe.ORANGE);
+            } else {
+                if (Zeichner.pixelLesen(Maus.position().x, Maus.position().y) == Farbe.ORANGE) {
+                    Zeichner.pixelSkizzieren(Maus.position().x, Maus.position().y, Farbe.ROT);
+                }
             }
+
+
             bewegen();
             Zeichner.zeichnen();
-            Zeit.warten(250);
+            Zeit.warten(100);
         }
     }
 
@@ -91,7 +97,7 @@ public class Knyacki {
                 break;
         }
 
-        if (Zeichner.pixelLesen(neuePosX, neuePosY) != WAND_FARBE && neuePosX > 0 && neuePosX < Zeichner.PIXEL_BREITE&& neuePosY > 0 && neuePosY < Zeichner.PIXEL_BREITE) {
+        if ((Zeichner.pixelLesen(neuePosX, neuePosY) == null || Zeichner.pixelLesen(neuePosX, neuePosY) == Farbe.ORANGE)  && neuePosX > 0 && neuePosX < Zeichner.PIXEL_BREITE&& neuePosY > 0 && neuePosY < Zeichner.PIXEL_BREITE) {
             Zeichner.pixelSkizzieren(position.x, position.y, KÖRPER_FARBE);
             position.x = neuePosX;
             position.y = neuePosY;

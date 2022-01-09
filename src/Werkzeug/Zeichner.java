@@ -4,8 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Zeichner {
-    public static final int PIXEL_BREITE = 100;
-    static final int PIXEL_SIZE = 8;
+    public static final int PIXEL_BREITE = 50;
+    static final int PIXEL_SIZE = 16;
 
     static Canvas canvas = null;
     static final JFrame frame = new JFrame(getMainClassName());
