@@ -24,21 +24,18 @@ public class Knyacki {
         Tastatur.wennTaste(Taste.SPACE, Knyacki::löschenAktivieren);
         Maus.wennKlick(Knyacki::telportieren);
 
-        Zeichner.zeichnen();
-
         while (true) {
             if (löschtGerade && Zeichner.pixelLesen(Maus.position().x,Maus.position().y) == KÖRPER_FARBE) {
                 position = Maus.position();
                 Zeichner.pixelSkizzieren(position.x, position.y, null);
-                Zeichner.zeichnen();
             }
+            Zeichner.zeichnen();
             Zeit.warten(13);
         }
     }
 
     private static void löschenAktivieren() {
         Zeichner.pixelSkizzieren(position.x, position.y, null);
-        Zeichner.zeichnen();
         löschtGerade = !löschtGerade;
     }
 
@@ -49,7 +46,6 @@ public class Knyacki {
 
         Zeichner.pixelSkizzieren(position.x, position.y, KOPF_FARBE);
 
-        Zeichner.zeichnen();
     }
 
     public static void linksBewegen() {
@@ -76,7 +72,6 @@ public class Knyacki {
             position.x = neuePosX;
             position.y = neuePosY;
             Zeichner.pixelSkizzieren(position.x, position.y, KOPF_FARBE);
-            Zeichner.zeichnen();
         }
     }
 }
