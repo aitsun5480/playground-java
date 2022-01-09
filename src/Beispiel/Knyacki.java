@@ -10,38 +10,39 @@ import Werkzeug.Zeit;
 
 import java.awt.*;
 
-//Aufgabe 7: Zeichne die japanische Flagge
 public class Knyacki {
     private static Position position = new Position(50, 50);
-    private static boolean fliegtGerade = false;
+    private static boolean löschtGerade = false;
     private static final Color KOPF_FARBE = Farbe.GOLD;
     private static final Color KÖRPER_FARBE = Farbe.GRÜN;
 
     public static void main(String[] args) {
-        Tastatur.wennTaste(Taste.LINKS, Knyacki::links);
-        Tastatur.wennTaste(Taste.RECHTS, Knyacki::rechts);
-        Tastatur.wennTaste(Taste.OBEN, Knyacki::oben);
-        Tastatur.wennTaste(Taste.UNTEN, Knyacki::unten);
-        Tastatur.wennTaste(Taste.SPACE, Knyacki::fliegen);
-        Maus.wennKlick(Knyacki::klick);
+        Tastatur.wennTaste(Taste.LINKS, Knyacki::linksBewegen);
+        Tastatur.wennTaste(Taste.RECHTS, Knyacki::rechtsBewegen);
+        Tastatur.wennTaste(Taste.OBEN, Knyacki::obenBewegen);
+        Tastatur.wennTaste(Taste.UNTEN, Knyacki::untenBewegen);
+        Tastatur.wennTaste(Taste.SPACE, Knyacki::löschenAktivieren);
+        Maus.wennKlick(Knyacki::telportieren);
 
         Zeichner.zeichnen();
 
         while (true) {
-            if (fliegtGerade) {
+            if (löschtGerade && Zeichner.pixelLesen(Maus.position().x,Maus.position().y) == KÖRPER_FARBE) {
                 position = Maus.position();
-                Zeichner.pixelSkizzieren(position.x, position.y, KOPF_FARBE);
+                Zeichner.pixelSkizzieren(position.x, position.y, null);
                 Zeichner.zeichnen();
             }
             Zeit.warten(13);
         }
     }
 
-    private static void fliegen() {
-        fliegtGerade = !fliegtGerade;
+    private static void löschenAktivieren() {
+        löschtGerade = !löschtGerade;
     }
 
-    public static void klick(Position event) {
+    public static void telportieren(Position event) {
+        Zeichner.pixelSkizzieren(position.x, position.y, null);
+
         position = event;
 
         Zeichner.pixelSkizzieren(position.x, position.y, KOPF_FARBE);
@@ -49,40 +50,32 @@ public class Knyacki {
         Zeichner.zeichnen();
     }
 
-    public static void links() {
-        Zeichner.pixelSkizzieren(position.x, position.y, KÖRPER_FARBE);
-
-        position.x--;
-        Zeichner.pixelSkizzieren(position.x, position.y, KOPF_FARBE);
-
-        Zeichner.zeichnen();
+    public static void linksBewegen() {
+        bewegen(position.x - 1, position.y);
     }
 
-    public static void rechts() {
-        Zeichner.pixelSkizzieren(position.x, position.y, KÖRPER_FARBE);
+    public static void rechtsBewegen() {
+        bewegen(position.x + 1, position.y);
 
-        position.x++;
-        Zeichner.pixelSkizzieren(position.x, position.y, KOPF_FARBE);
-
-        Zeichner.zeichnen();
     }
 
-    public static void oben() {
-        Zeichner.pixelSkizzieren(position.x, position.y, KÖRPER_FARBE);
+    public static void obenBewegen() {
+        bewegen(position.x, position.y - 1);
 
-        position.y--;
-        Zeichner.pixelSkizzieren(position.x, position.y, KOPF_FARBE);
-
-        Zeichner.zeichnen();
     }
 
-    public static void unten() {
-        Zeichner.pixelSkizzieren(position.x, position.y, KÖRPER_FARBE);
+    public static void untenBewegen() {
+        bewegen(position.x, position.y + 1);
+    }
 
-        position.y++;
-        Zeichner.pixelSkizzieren(position.x, position.y, KOPF_FARBE);
-
-        Zeichner.zeichnen();
+    public static void bewegen(int neuePosX, int neuePosY) {
+        if (Zeichner.pixelLesen(neuePosX, neuePosY) == null) {
+            Zeichner.pixelSkizzieren(position.x, position.y, KÖRPER_FARBE);
+            position.x = neuePosX;
+            position.y = neuePosY;
+            Zeichner.pixelSkizzieren(position.x, position.y, KOPF_FARBE);
+            Zeichner.zeichnen();
+        }
     }
 }
 
