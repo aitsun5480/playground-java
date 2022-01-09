@@ -7,8 +7,8 @@ public class Zeichner {
     public static final int PIXEL_BREITE = 100;
     static final int PIXEL_SIZE = 8;
 
-    private static Canvas canvas = null;
-    private static final JFrame frame = new JFrame("Zeichner");
+    static Canvas canvas = null;
+    static final JFrame frame = new JFrame(getMainClassName());
 
     private static final Color[][] pixels = new Color[PIXEL_BREITE][PIXEL_BREITE];
 
@@ -30,8 +30,21 @@ public class Zeichner {
         }
     }
 
+    private static String getMainClassName() {
+        StackTraceElement trace[] = Thread.currentThread().getStackTrace();
+        if (trace.length > 0) {
+            return trace[trace.length - 1].getClassName();
+        }
+
+        return "Zeichner";
+    }
+
     public static void pixelSkizzieren(int x, int y, Color color) {
         pixels[x][y] = color;
+    }
+
+    public static Color pixelLesen(int x, int y) {
+        return pixels[x][y];
     }
 
     public static void zeichnen() {
