@@ -47,6 +47,7 @@ public class Zeichner {
     private static void initialize() {
         if (Zeichner.canvas == null) {
             Canvas canvas = new Canvas();
+            frame.addKeyListener(new Tastatur.Listener());
             frame.setMinimumSize(new Dimension(PIXEL_SIZE * PIXEL_BREITE, PIXEL_SIZE * PIXEL_BREITE + 30));
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.getContentPane().add(canvas);
