@@ -36,7 +36,9 @@ public class Maus {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            onClick.run();
+            if (onClick != null){
+                onClick.run();
+            }
         }
 
         @Override
