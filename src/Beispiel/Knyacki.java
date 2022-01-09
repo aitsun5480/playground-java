@@ -37,13 +37,15 @@ public class Knyacki {
     }
 
     private static void löschenAktivieren() {
+        Zeichner.pixelSkizzieren(position.x, position.y, null);
+        Zeichner.zeichnen();
         löschtGerade = !löschtGerade;
     }
 
-    public static void telportieren(Position event) {
+    public static void telportieren() {
         Zeichner.pixelSkizzieren(position.x, position.y, null);
 
-        position = event;
+        position = Maus.position();
 
         Zeichner.pixelSkizzieren(position.x, position.y, KOPF_FARBE);
 
@@ -69,7 +71,7 @@ public class Knyacki {
     }
 
     public static void bewegen(int neuePosX, int neuePosY) {
-        if (Zeichner.pixelLesen(neuePosX, neuePosY) == null) {
+        if (!löschtGerade && Zeichner.pixelLesen(neuePosX, neuePosY) == null) {
             Zeichner.pixelSkizzieren(position.x, position.y, KÖRPER_FARBE);
             position.x = neuePosX;
             position.y = neuePosY;

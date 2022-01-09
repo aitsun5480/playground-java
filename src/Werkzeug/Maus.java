@@ -7,9 +7,9 @@ import java.util.function.Consumer;
 
 public class Maus {
 
-    private static Consumer<Position> onClick;
+    private static Runnable onClick;
 
-    public static void wennKlick(Consumer<Position> aktion) {
+    public static void wennKlick(Runnable aktion) {
         onClick = aktion;
     }
 
@@ -36,7 +36,7 @@ public class Maus {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            onClick.accept(buildPosition(e));
+            onClick.run();
         }
 
         @Override
@@ -53,10 +53,6 @@ public class Maus {
         public void mouseExited(MouseEvent e) {
 
         }
-    }
-
-    private static Position buildPosition(MouseEvent e) {
-        return getPosition(e.getX(), e.getY());
     }
 
     private static Position getPosition(int pixelX, int pixelY) {
