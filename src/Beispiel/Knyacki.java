@@ -1,6 +1,7 @@
 package Beispiel;
 
 import Werkzeug.Farbe;
+import Werkzeug.Lautsprecher;
 import Werkzeug.Maus;
 import Werkzeug.Position;
 import Werkzeug.Tastatur;
@@ -9,14 +10,21 @@ import Werkzeug.Zeichner;
 import Werkzeug.Zeit;
 
 import java.awt.*;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 public class Knyacki {
-    private static Position position = new Position(Zeichner.PIXEL_BREITE / 2, Zeichner.PIXEL_BREITE / 2);
-    private static Richtung richtung = Richtung.OBEN;
+    private static Position position;
+    private static Richtung richtung;
+    private static Queue<Position> schwanz;
+    private static int soundZähler;
 
     private static final Color KOPF_FARBE = Farbe.GOLD;
     private static final Color KÖRPER_FARBE = Farbe.GRÜN;
     private static final Color WAND_FARBE = Farbe.ROT;
+    private static final Color BAUEN_FARBE = Farbe.ORANGE;
+
+    private static boolean istGameOver = true;
 
     private enum Richtung {
         RECHTS, LINKS, OBEN, UNTEN
@@ -25,26 +33,20 @@ public class Knyacki {
     public static void main(String[] args) {
         Tastatur.wennTaste(Taste.LINKS, Knyacki::linksDrehen);
         Tastatur.wennTaste(Taste.RECHTS, Knyacki::rechtsDrehen);
-
-        bewegen();
+        Tastatur.wennTaste(Taste.SPACE, Knyacki::neuesSpiel);
 
         while (true) {
-            if (Zeichner.pixelLesen(Maus.position().x, Maus.position().y) == null) {
-                Zeichner.pixelSkizzieren(Maus.position().x, Maus.position().y, Farbe.ORANGE);
-            } else {
-                if (Zeichner.pixelLesen(Maus.position().x, Maus.position().y) == Farbe.ORANGE) {
-                    Zeichner.pixelSkizzieren(Maus.position().x, Maus.position().y, Farbe.ROT);
-                }
+            if (!istGameOver) {
+                bewegen();
+                bauen();
             }
 
-
-            bewegen();
             Zeichner.zeichnen();
             Zeit.warten(100);
         }
     }
 
-    public static void linksDrehen() {
+    private static void linksDrehen() {
         switch (richtung) {
             case OBEN:
                 richtung = Richtung.LINKS;
@@ -61,7 +63,7 @@ public class Knyacki {
         }
     }
 
-    public static void rechtsDrehen() {
+    private static void rechtsDrehen() {
         switch (richtung) {
             case OBEN:
                 richtung = Richtung.RECHTS;
@@ -78,7 +80,30 @@ public class Knyacki {
         }
     }
 
-    public static void bewegen() {
+    private static void neuesSpiel() {
+        Lautsprecher.abspielen("NewGame");
+        if (istGameOver) {
+            for (int spaltenZähler = 0; spaltenZähler < Zeichner.PIXEL_BREITE; spaltenZähler++) {
+                for (int reihenZähler = 0; reihenZähler < Zeichner.PIXEL_BREITE; reihenZähler++) {
+                    if (spaltenZähler == 0 || reihenZähler == 0 || spaltenZähler == Zeichner.PIXEL_BREITE - 1 || reihenZähler == Zeichner.PIXEL_BREITE - 1) {
+                        Zeichner.pixelSkizzieren(spaltenZähler, reihenZähler, WAND_FARBE);
+                    } else {
+                        Zeichner.pixelSkizzieren(spaltenZähler, reihenZähler, null);
+                    }
+                }
+            }
+
+            schwanz = new ArrayDeque<>();
+            soundZähler = 0;
+            richtung = Richtung.OBEN;
+            position = new Position(Zeichner.PIXEL_BREITE / 2, Zeichner.PIXEL_BREITE / 2);
+
+            istGameOver = false;
+        }
+    }
+
+    private static void bewegen() {
+        schwanz.add(new Position(position.x, position.y));
         int neuePosX = position.x;
         int neuePosY = position.y;
 
@@ -97,11 +122,50 @@ public class Knyacki {
                 break;
         }
 
-        if ((Zeichner.pixelLesen(neuePosX, neuePosY) == null || Zeichner.pixelLesen(neuePosX, neuePosY) == Farbe.ORANGE)  && neuePosX > 0 && neuePosX < Zeichner.PIXEL_BREITE&& neuePosY > 0 && neuePosY < Zeichner.PIXEL_BREITE) {
+        if ((neuePosX < 0 || neuePosX >= Zeichner.PIXEL_BREITE || neuePosY < 0 || neuePosY >= Zeichner.PIXEL_BREITE) ||
+                (Zeichner.pixelLesen(neuePosX, neuePosY) == KÖRPER_FARBE || Zeichner.pixelLesen(neuePosX, neuePosY) == WAND_FARBE)) {
+            Lautsprecher.abspielen("GameOver");
+            istGameOver = true;
+            return;
+        }
+
+        if (Zeichner.pixelLesen(neuePosX, neuePosY) == BAUEN_FARBE) {
+            switch (soundZähler % 2) {
+                case 0:
+                    Lautsprecher.abspielen("KnyackiObachan");
+                    break;
+                case 1:
+                    Lautsprecher.abspielen("KnyackiChan");
+                    break;
+            }
+
+            soundZähler++;
+
+            for (int zähler = 0; zähler < 10; zähler++) {
+                if (schwanz.size() > 0) {
+
+                    Position schwanzSpitze = schwanz.remove();
+                    Zeichner.pixelSkizzieren(schwanzSpitze.x, schwanzSpitze.y, null);
+                }
+            }
+        }
+
+        if ((Zeichner.pixelLesen(neuePosX, neuePosY) == null || Zeichner.pixelLesen(neuePosX, neuePosY) == BAUEN_FARBE)) {
             Zeichner.pixelSkizzieren(position.x, position.y, KÖRPER_FARBE);
             position.x = neuePosX;
             position.y = neuePosY;
             Zeichner.pixelSkizzieren(position.x, position.y, KOPF_FARBE);
+        }
+    }
+
+    private static void bauen() {
+        if (Zeichner.pixelLesen(Maus.position().x, Maus.position().y) == null) {
+            Zeichner.pixelSkizzieren(Maus.position().x, Maus.position().y, BAUEN_FARBE);
+        } else {
+            if (Zeichner.pixelLesen(Maus.position().x, Maus.position().y) == BAUEN_FARBE) {
+                Zeichner.pixelSkizzieren(Maus.position().x, Maus.position().y, WAND_FARBE);
+                Lautsprecher.abspielen("Bauen");
+            }
         }
     }
 }
