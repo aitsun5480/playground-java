@@ -18,6 +18,7 @@ public class Knyacki {
     private static Richtung richtung;
     private static Queue<Position> schwanz;
     private static int soundZähler;
+    private static int score;
 
     private static final Color KOPF_FARBE = Farbe.GOLD;
     private static final Color KÖRPER_FARBE = Farbe.GRÜN;
@@ -39,8 +40,19 @@ public class Knyacki {
             if (!istGameOver) {
                 bewegen();
                 bauen();
+                score++;
+
+                int außenWandDicke = (score / 50) + 1;
+                for (int spaltenZähler = 0; spaltenZähler < Zeichner.PIXEL_BREITE; spaltenZähler++) {
+                    for (int reihenZähler = 0; reihenZähler < Zeichner.PIXEL_BREITE; reihenZähler++) {
+                        if (spaltenZähler < außenWandDicke || reihenZähler < außenWandDicke || spaltenZähler > Zeichner.PIXEL_BREITE - außenWandDicke - 1 || reihenZähler > Zeichner.PIXEL_BREITE - außenWandDicke - 1) {
+                            Zeichner.pixelSkizzieren(spaltenZähler, reihenZähler, WAND_FARBE);
+                        }
+                    }
+                }
             }
 
+            Zeichner.textSkizzieren(String.valueOf(score));
             Zeichner.zeichnen();
             Zeit.warten(100);
         }
@@ -81,8 +93,8 @@ public class Knyacki {
     }
 
     private static void neuesSpiel() {
-        Lautsprecher.abspielen("NewGame");
         if (istGameOver) {
+            Lautsprecher.abspielen("NewGame");
             for (int spaltenZähler = 0; spaltenZähler < Zeichner.PIXEL_BREITE; spaltenZähler++) {
                 for (int reihenZähler = 0; reihenZähler < Zeichner.PIXEL_BREITE; reihenZähler++) {
                     if (spaltenZähler == 0 || reihenZähler == 0 || spaltenZähler == Zeichner.PIXEL_BREITE - 1 || reihenZähler == Zeichner.PIXEL_BREITE - 1) {
@@ -97,7 +109,7 @@ public class Knyacki {
             soundZähler = 0;
             richtung = Richtung.OBEN;
             position = new Position(Zeichner.PIXEL_BREITE / 2, Zeichner.PIXEL_BREITE / 2);
-
+            score = 0;
             istGameOver = false;
         }
     }

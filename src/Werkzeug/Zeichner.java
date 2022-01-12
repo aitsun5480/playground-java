@@ -11,11 +11,15 @@ public class Zeichner {
     static final JFrame frame = new JFrame(getMainClassName());
 
     private static final Color[][] pixels = new Color[PIXEL_BREITE][PIXEL_BREITE];
+    private static String text = "";
 
     private static class Canvas extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
+
+            g.setColor(Farbe.SCHWARZ);
+            g.drawString(text, PIXEL_BREITE * PIXEL_SIZE, 30);
 
             for (int i = 0; i < PIXEL_BREITE; i++) {
                 Color[] line = pixels[i];
@@ -43,6 +47,11 @@ public class Zeichner {
         pixels[x][y] = color;
     }
 
+    public static void textSkizzieren(String text) {
+        Zeichner.text = text;
+    }
+
+
     public static Color pixelLesen(int x, int y) {
         return pixels[x][y];
     }
@@ -62,7 +71,7 @@ public class Zeichner {
             Canvas canvas = new Canvas();
             frame.addKeyListener(new Tastatur.Listener());
             canvas.addMouseListener(new Maus.Listener());
-            frame.setMinimumSize(new Dimension(PIXEL_SIZE * PIXEL_BREITE, PIXEL_SIZE * PIXEL_BREITE + 30));
+            frame.setMinimumSize(new Dimension(PIXEL_SIZE * PIXEL_BREITE + 30, PIXEL_SIZE * PIXEL_BREITE + 60));
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.getContentPane().add(canvas);
             frame.setVisible(true);
