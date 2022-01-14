@@ -15,10 +15,10 @@ public class Knyacki {
     private static Position position;
     private static Richtung richtung;
     private static Queue<Position> schwanz;
-    private static int soundZähler;
     private static int endeZähler;
     private static int letzerEndeZählScore;
     private static int score;
+    private static int letzterAußenWandScore;
 
     private static boolean istGameOver = true;
 
@@ -43,14 +43,18 @@ public class Knyacki {
                 bauen();
                 score++;
 
-                int außenWandDicke = (score / 50) + 1;
-                for (int spaltenZähler = 0; spaltenZähler < Zeichner.PIXEL_BREITE; spaltenZähler++) {
-                    for (int reihenZähler = 0; reihenZähler < Zeichner.PIXEL_BREITE; reihenZähler++) {
-                        if (spaltenZähler < außenWandDicke || reihenZähler < außenWandDicke || spaltenZähler > Zeichner.PIXEL_BREITE - außenWandDicke - 1 || reihenZähler > Zeichner.PIXEL_BREITE - außenWandDicke - 1) {
-                            Zeichner.bildSkizzieren(spaltenZähler, reihenZähler, "Wand");
-                            felder[spaltenZähler][reihenZähler] = Feld.WAND;
+                if (score - letzterAußenWandScore > 50) {
+                    int außenWandDicke = (score / 50) + 1;
+                    for (int spaltenZähler = 0; spaltenZähler < Zeichner.PIXEL_BREITE; spaltenZähler++) {
+                        for (int reihenZähler = 0; reihenZähler < Zeichner.PIXEL_BREITE; reihenZähler++) {
+                            if (spaltenZähler < außenWandDicke || reihenZähler < außenWandDicke || spaltenZähler > Zeichner.PIXEL_BREITE - außenWandDicke - 1 || reihenZähler > Zeichner.PIXEL_BREITE - außenWandDicke - 1) {
+                                Zeichner.bildSkizzieren(spaltenZähler, reihenZähler, "Wand");
+                                felder[spaltenZähler][reihenZähler] = Feld.WAND;
+                            }
                         }
                     }
+                    Lautsprecher.abspielen("Bauen");
+                    letzterAußenWandScore = score;
                 }
             }
 
@@ -110,9 +114,9 @@ public class Knyacki {
             }
 
             schwanz = new ArrayDeque<>();
-            soundZähler = 0;
             endeZähler = 0;
             letzerEndeZählScore = 0;
+            letzterAußenWandScore = 0;
             richtung = Richtung.OBEN;
             position = new Position(Zeichner.PIXEL_BREITE / 2, Zeichner.PIXEL_BREITE / 2);
             score = 0;
@@ -121,7 +125,9 @@ public class Knyacki {
     }
 
     private static void bewegen() {
-        schwanz.add(new Position(position.x, position.y));
+        if (schwanz.peek() == null || !schwanz.peek().equals(position)) {
+            schwanz.add(new Position(position.x, position.y));
+        }
         int neuePosX = position.x;
         int neuePosY = position.y;
 
@@ -169,25 +175,13 @@ public class Knyacki {
         }
 
         if (felder[neuePosX][neuePosY] == Feld.BAUEN) {
-            switch (soundZähler % 2) {
-                case 0:
-                    Lautsprecher.abspielen("KnyackiObachan");
-                    break;
-                case 1:
-                    Lautsprecher.abspielen("KnyackiChan");
-                    break;
+            for (int zähler = 0; zähler < 10 && schwanz.size() > 0; zähler++) {
+                Position schwanzSpitze = schwanz.poll();
+                Zeichner.pixelSkizzieren(schwanzSpitze.x, schwanzSpitze.y, null);
+                felder[schwanzSpitze.x][schwanzSpitze.y] = null;
             }
 
-            soundZähler++;
-
-            for (int zähler = 0; zähler < 10; zähler++) {
-                if (schwanz.size() > 0) {
-
-                    Position schwanzSpitze = schwanz.remove();
-                    Zeichner.pixelSkizzieren(schwanzSpitze.x, schwanzSpitze.y, null);
-                    felder[schwanzSpitze.x][schwanzSpitze.y] = null;
-                }
-            }
+            Lautsprecher.abspielen("KnyackiChan");
         }
 
         if ((felder[neuePosX][neuePosY] == null || felder[neuePosX][neuePosY] == Feld.BAUEN)) {
@@ -206,12 +200,6 @@ public class Knyacki {
         if (felder[x][y] == null) {
             Zeichner.bildSkizzieren(x, y, "Item");
             felder[x][y] = Feld.BAUEN;
-        } else {
-            if (felder[x][y] == Feld.BAUEN) {
-                Zeichner.bildSkizzieren(x, y, "Wand");
-                felder[x][y] = Feld.WAND;
-                Lautsprecher.abspielen("Bauen");
-            }
         }
     }
 }
