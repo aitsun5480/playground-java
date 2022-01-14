@@ -1,17 +1,56 @@
 package Werkzeug;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Zeichner {
-    public static final int PIXEL_BREITE = 50;
+    public static final int PIXEL_BREITE = 40;
     static final int PIXEL_SIZE = 16;
 
     static Canvas canvas = null;
     static final JFrame frame = new JFrame(getMainClassName());
 
-    private static final Color[][] pixels = new Color[PIXEL_BREITE][PIXEL_BREITE];
+    private static final Bild[][] blocks = new Bild[PIXEL_BREITE][PIXEL_BREITE];
     private static String text = "";
+
+    private static final Map<Color, BufferedImage> pixels = new HashMap<>();
+    private static final Map<String, BufferedImage> graphics = new HashMap<>();
+
+    private static class Bild {
+        public BufferedImage bild;
+
+        public Bild(String bildName) throws IOException {
+            if (graphics.containsKey(bildName)) {
+                this.bild = graphics.get(bildName);
+            } else {
+                String path = System.getProperty("user.dir") + "/assets/graphics/" + bildName + ".png";
+                BufferedImage image = ImageIO.read(new URL("file://" + path));
+
+                this.bild = image;
+                graphics.put(bildName, image);
+            }
+        }
+
+        public Bild(Color farbe) {
+            if (pixels.containsKey(farbe)) {
+                this.bild = pixels.get(farbe);
+            } else {
+                this.bild = new BufferedImage(PIXEL_SIZE, PIXEL_SIZE, BufferedImage.TYPE_INT_RGB);
+
+                var graphics = bild.getGraphics();
+                graphics.setColor(farbe);
+                graphics.fillRect(0, 0, PIXEL_SIZE, PIXEL_SIZE);
+
+                pixels.put(farbe, this.bild);
+            }
+        }
+    }
 
     private static class Canvas extends JPanel {
         @Override
@@ -22,12 +61,11 @@ public class Zeichner {
             g.drawString(text, PIXEL_BREITE * PIXEL_SIZE, 30);
 
             for (int i = 0; i < PIXEL_BREITE; i++) {
-                Color[] line = pixels[i];
+                Bild[] line = blocks[i];
                 for (int j = 0; j < PIXEL_BREITE; j++) {
-                    Color pixel = line[j];
+                    Bild pixel = line[j];
                     if (pixel != null) {
-                        g.setColor(pixel);
-                        g.fillRect(i * PIXEL_SIZE, j * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
+                        g.drawImage(pixel.bild, i * PIXEL_SIZE, j * PIXEL_SIZE, null);
                     }
                 }
             }
@@ -44,16 +82,20 @@ public class Zeichner {
     }
 
     public static void pixelSkizzieren(int x, int y, Color color) {
-        pixels[x][y] = color;
+        var pixel = new Bild(color);
+        blocks[x][y] = pixel;
+    }
+
+    public static void bildSkizzieren(int x, int y, String bildName) {
+        try {
+            blocks[x][y] = new Bild(bildName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void textSkizzieren(String text) {
         Zeichner.text = text;
-    }
-
-
-    public static Color pixelLesen(int x, int y) {
-        return pixels[x][y];
     }
 
     public static void zeichnen() {

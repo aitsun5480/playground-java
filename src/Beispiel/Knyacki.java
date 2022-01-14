@@ -2,12 +2,12 @@ package Beispiel;
 
 import Werkzeug.Farbe;
 import Werkzeug.Lautsprecher;
-import Werkzeug.Maus;
 import Werkzeug.Position;
 import Werkzeug.Tastatur;
 import Werkzeug.Taste;
 import Werkzeug.Zeichner;
 import Werkzeug.Zeit;
+import Werkzeug.Zufall;
 
 import java.awt.*;
 import java.util.ArrayDeque;
@@ -18,14 +18,21 @@ public class Knyacki {
     private static Richtung richtung;
     private static Queue<Position> schwanz;
     private static int soundZähler;
+    private static int endeZähler;
+    private static int letzerEndeZählScore;
     private static int score;
 
-    private static final Color KOPF_FARBE = Farbe.GOLD;
     private static final Color KÖRPER_FARBE = Farbe.GRÜN;
     private static final Color WAND_FARBE = Farbe.ROT;
     private static final Color BAUEN_FARBE = Farbe.ORANGE;
 
     private static boolean istGameOver = true;
+
+    private static final Feld[][] felder = new Feld[Zeichner.PIXEL_BREITE][Zeichner.PIXEL_BREITE];
+
+    private enum Feld {
+        KOPF, KÖRPER, BAUEN, WAND
+    }
 
     private enum Richtung {
         RECHTS, LINKS, OBEN, UNTEN
@@ -47,6 +54,7 @@ public class Knyacki {
                     for (int reihenZähler = 0; reihenZähler < Zeichner.PIXEL_BREITE; reihenZähler++) {
                         if (spaltenZähler < außenWandDicke || reihenZähler < außenWandDicke || spaltenZähler > Zeichner.PIXEL_BREITE - außenWandDicke - 1 || reihenZähler > Zeichner.PIXEL_BREITE - außenWandDicke - 1) {
                             Zeichner.pixelSkizzieren(spaltenZähler, reihenZähler, WAND_FARBE);
+                            felder[spaltenZähler][reihenZähler] = Feld.WAND;
                         }
                     }
                 }
@@ -99,14 +107,18 @@ public class Knyacki {
                 for (int reihenZähler = 0; reihenZähler < Zeichner.PIXEL_BREITE; reihenZähler++) {
                     if (spaltenZähler == 0 || reihenZähler == 0 || spaltenZähler == Zeichner.PIXEL_BREITE - 1 || reihenZähler == Zeichner.PIXEL_BREITE - 1) {
                         Zeichner.pixelSkizzieren(spaltenZähler, reihenZähler, WAND_FARBE);
+                        felder[spaltenZähler][reihenZähler] = Feld.WAND;
                     } else {
                         Zeichner.pixelSkizzieren(spaltenZähler, reihenZähler, null);
+                        felder[spaltenZähler][reihenZähler] = null;
                     }
                 }
             }
 
             schwanz = new ArrayDeque<>();
             soundZähler = 0;
+            endeZähler = 0;
+            letzerEndeZählScore = 0;
             richtung = Richtung.OBEN;
             position = new Position(Zeichner.PIXEL_BREITE / 2, Zeichner.PIXEL_BREITE / 2);
             score = 0;
@@ -135,13 +147,34 @@ public class Knyacki {
         }
 
         if ((neuePosX < 0 || neuePosX >= Zeichner.PIXEL_BREITE || neuePosY < 0 || neuePosY >= Zeichner.PIXEL_BREITE) ||
-                (Zeichner.pixelLesen(neuePosX, neuePosY) == KÖRPER_FARBE || Zeichner.pixelLesen(neuePosX, neuePosY) == WAND_FARBE)) {
-            Lautsprecher.abspielen("GameOver");
-            istGameOver = true;
+                felder[neuePosX][neuePosY] == Feld.KÖRPER || felder[neuePosX][neuePosY] == Feld.WAND) {
+            if (score - letzerEndeZählScore > 10) {
+                endeZähler++;
+                switch (endeZähler) {
+                    case 1:
+                        Lautsprecher.abspielen("Ichi", 6);
+                        break;
+                    case 2:
+                        Lautsprecher.abspielen("Ni", 6);
+                        break;
+                    case 3:
+                        Lautsprecher.abspielen("San", 6);
+                        break;
+                    case 4:
+                        Lautsprecher.abspielen("GameOver", 6);
+                        istGameOver = true;
+
+                }
+                letzerEndeZählScore = score;
+            }
+
             return;
+        } else {
+            letzerEndeZählScore = 0;
+            endeZähler = 0;
         }
 
-        if (Zeichner.pixelLesen(neuePosX, neuePosY) == BAUEN_FARBE) {
+        if (felder[neuePosX][ neuePosY] == Feld.BAUEN) {
             switch (soundZähler % 2) {
                 case 0:
                     Lautsprecher.abspielen("KnyackiObachan");
@@ -158,24 +191,31 @@ public class Knyacki {
 
                     Position schwanzSpitze = schwanz.remove();
                     Zeichner.pixelSkizzieren(schwanzSpitze.x, schwanzSpitze.y, null);
+                    felder[schwanzSpitze.x][schwanzSpitze.y] = null;
                 }
             }
         }
 
-        if ((Zeichner.pixelLesen(neuePosX, neuePosY) == null || Zeichner.pixelLesen(neuePosX, neuePosY) == BAUEN_FARBE)) {
+        if ((felder[neuePosX][neuePosY] == null || felder[neuePosX][neuePosY] == Feld.BAUEN)) {
             Zeichner.pixelSkizzieren(position.x, position.y, KÖRPER_FARBE);
+            felder[position.x][position.y] = Feld.KÖRPER;
             position.x = neuePosX;
             position.y = neuePosY;
-            Zeichner.pixelSkizzieren(position.x, position.y, KOPF_FARBE);
+            Zeichner.bildSkizzieren(position.x, position.y, "Kopf");
+            felder[position.x][position.y] = Feld.KOPF;
         }
     }
 
     private static void bauen() {
-        if (Zeichner.pixelLesen(Maus.position().x, Maus.position().y) == null) {
-            Zeichner.pixelSkizzieren(Maus.position().x, Maus.position().y, BAUEN_FARBE);
+        int x = Zufall.zahl(0, Zeichner.PIXEL_BREITE - 1);
+        int y = Zufall.zahl(0, Zeichner.PIXEL_BREITE - 1);
+        if (felder[x][y] == null) {
+            Zeichner.bildSkizzieren(x, y, "Kopf");
+            felder[x][y] = Feld.BAUEN;
         } else {
-            if (Zeichner.pixelLesen(Maus.position().x, Maus.position().y) == BAUEN_FARBE) {
-                Zeichner.pixelSkizzieren(Maus.position().x, Maus.position().y, WAND_FARBE);
+            if (felder[x][y] == Feld.BAUEN) {
+                Zeichner.pixelSkizzieren(x, y, WAND_FARBE);
+                felder[x][y] = Feld.WAND;
                 Lautsprecher.abspielen("Bauen");
             }
         }
