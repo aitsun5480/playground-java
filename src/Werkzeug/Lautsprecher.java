@@ -27,11 +27,13 @@ public class Lautsprecher {
                 sounds.put(soundName, clip);
             }
             Clip clip = sounds.get(soundName);
-            clip.setFramePosition(0);
-            FloatControl gainControl =
-                    (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(lautStärke);
-            clip.start();
+            if (!clip.isRunning()) {
+                clip.setFramePosition(0);
+                FloatControl gainControl =
+                        (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                gainControl.setValue(lautStärke);
+                clip.start();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
