@@ -1,4 +1,4 @@
-package Werkzeug;
+package Werkzeug.Drucker;
 
 public class Drucker {
     public static void drucken(String text) {

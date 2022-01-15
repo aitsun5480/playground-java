@@ -1,6 +1,6 @@
 package Aufgabe;
 
-import Werkzeug.Drucker;
+import Werkzeug.Drucker.Drucker;
 
 // Aufgabe:  Drucke die Zahlen 1 bis 10, jeweils auf einer eigenen Zeile.
 //タスク：1から10までの数字をそれぞれ別々の行に印刷します。

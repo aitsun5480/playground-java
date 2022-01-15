@@ -1,4 +1,4 @@
-package Werkzeug;
+package Werkzeug.Audio;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;

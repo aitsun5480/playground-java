@@ -1,10 +1,7 @@
 package Aufgabe;
 
-import Werkzeug.Drucker;
-import Werkzeug.Farbe;
-import Werkzeug.Zeichner;
-
-import java.util.concurrent.TimeUnit;
+import Werkzeug.Grafik.Farbe;
+import Werkzeug.Grafik.Zeichner;
 
 //Aufgabe 5: Zeichne den kompletten Bildschirm rot
 public class Aufgabe5 {

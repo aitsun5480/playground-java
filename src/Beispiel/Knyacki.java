@@ -1,12 +1,12 @@
 package Beispiel;
 
-import Werkzeug.Lautsprecher;
-import Werkzeug.Position;
-import Werkzeug.Tastatur;
-import Werkzeug.Taste;
-import Werkzeug.Zeichner;
-import Werkzeug.Zeit;
-import Werkzeug.Zufall;
+import Werkzeug.Audio.Lautsprecher;
+import Werkzeug.Grafik.Position;
+import Werkzeug.Steuerung.Tastatur;
+import Werkzeug.Steuerung.Taste;
+import Werkzeug.Grafik.Zeichner;
+import Werkzeug.Zeit.Zeit;
+import Werkzeug.Mathe.Zufall;
 
 import java.util.ArrayDeque;
 import java.util.Queue;

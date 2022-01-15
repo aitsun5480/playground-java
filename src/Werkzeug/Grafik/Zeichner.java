@@ -1,4 +1,7 @@
-package Werkzeug;
+package Werkzeug.Grafik;
+
+import Werkzeug.Steuerung.Maus;
+import Werkzeug.Steuerung.Tastatur;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,10 +14,10 @@ import java.util.Map;
 
 public class Zeichner {
     public static final int PIXEL_BREITE = 40;
-    static final int PIXEL_SIZE = 16;
+    public static final int PIXEL_SIZE = 16;
 
     static Canvas canvas = null;
-    static final JFrame frame = new JFrame(getMainClassName());
+    public static final JFrame frame = new JFrame(getMainClassName());
 
     private static final Bild[][] blocks = new Bild[PIXEL_BREITE][PIXEL_BREITE];
     private static String text = "";

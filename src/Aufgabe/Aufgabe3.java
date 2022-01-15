@@ -1,6 +1,6 @@
 package Aufgabe;
 
-import Werkzeug.Drucker;
+import Werkzeug.Drucker.Drucker;
 
 //Aufgabe 3: Drucke ein Mal Hallo, dann zweimal, dann dreimal usw. Bis 1000 Mal hallo gedruckt wir
 //  Bsp:

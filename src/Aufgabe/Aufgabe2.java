@@ -1,6 +1,6 @@
 package Aufgabe;
 
-import Werkzeug.Drucker;
+import Werkzeug.Drucker.Drucker;
 
 //Aufgabe 2: Drucke die Zahlen 1 - 1000
 //演習2：1から1000までの数字を印刷します

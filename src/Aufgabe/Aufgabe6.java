@@ -1,7 +1,7 @@
 package Aufgabe;
 
-import Werkzeug.Farbe;
-import Werkzeug.Zeichner;
+import Werkzeug.Grafik.Farbe;
+import Werkzeug.Grafik.Zeichner;
 
 //Aufgabe 6: Zeichne die Bildschirmmitte rot
 public class Aufgabe6 {

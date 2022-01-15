@@ -1,4 +1,4 @@
-package Werkzeug;
+package Werkzeug.Steuerung;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -13,7 +13,7 @@ public class Tastatur {
         keyMapping.put(taste, aktion);
     }
 
-    static class Listener implements KeyListener {
+    public static class Listener implements KeyListener {
         @Override
         public void keyTyped(KeyEvent e) {
         }

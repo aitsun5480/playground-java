@@ -1,4 +1,4 @@
-package Werkzeug;
+package Werkzeug.Steuerung;
 
 import java.awt.event.KeyEvent;
 

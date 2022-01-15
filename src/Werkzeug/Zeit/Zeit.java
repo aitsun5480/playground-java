@@ -1,4 +1,4 @@
-package Werkzeug;
+package Werkzeug.Zeit;
 
 import java.util.concurrent.TimeUnit;
 

@@ -1,4 +1,4 @@
-package Werkzeug;
+package Werkzeug.Mathe;
 
 import java.util.concurrent.ThreadLocalRandom;
 

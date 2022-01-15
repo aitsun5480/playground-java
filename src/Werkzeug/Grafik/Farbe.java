@@ -1,4 +1,4 @@
-package Werkzeug;
+package Werkzeug.Grafik;
 
 import java.awt.*;
 

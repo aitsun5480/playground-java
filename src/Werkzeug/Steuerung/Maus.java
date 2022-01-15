@@ -1,9 +1,11 @@
-package Werkzeug;
+package Werkzeug.Steuerung;
+
+import Werkzeug.Grafik.Position;
+import Werkzeug.Grafik.Zeichner;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.function.Consumer;
 
 public class Maus {
 
@@ -29,7 +31,7 @@ public class Maus {
         }
     }
 
-    static class Listener implements MouseListener {
+    public static class Listener implements MouseListener {
         @Override
         public void mouseClicked(MouseEvent e) {
         }

@@ -1,7 +1,7 @@
 package Aufgabe;
 
-import Werkzeug.Farbe;
-import Werkzeug.Zeichner;
+import Werkzeug.Grafik.Farbe;
+import Werkzeug.Grafik.Zeichner;
 
 //Aufgabe 4: Zeichne einen roten Pixel in der Mitte des Bildschirms
 public class Aufgabe4 {
