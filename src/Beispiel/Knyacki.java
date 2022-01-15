@@ -18,7 +18,6 @@ public class Knyacki {
     private static int endeZähler;
     private static int letzerEndeZählScore;
     private static int score;
-    private static int letzterAußenWandScore;
 
     private static boolean istGameOver = true;
 
@@ -43,7 +42,7 @@ public class Knyacki {
                 bauen();
                 score++;
 
-                if (score - letzterAußenWandScore > 50) {
+                if (score % 50 == 0) {
                     Lautsprecher.abspielen("Bauen");
                     int außenWandDicke = (score / 50) + 1;
                     for (int spaltenZähler = 0; spaltenZähler < Zeichner.PIXEL_BREITE; spaltenZähler++) {
@@ -53,12 +52,11 @@ public class Knyacki {
                                     Lautsprecher.abspielen("GameOver", 6);
                                     istGameOver = true;
                                 }
-                                Zeichner.bildSkizzieren(spaltenZähler, reihenZähler, "Wand");
                                 felder[spaltenZähler][reihenZähler] = Feld.WAND;
+                                Zeichner.bildSkizzieren(spaltenZähler, reihenZähler, "Wand");
                             }
                         }
                     }
-                    letzterAußenWandScore = score;
                 }
             }
 
@@ -120,7 +118,6 @@ public class Knyacki {
             schwanz = new ArrayDeque<>();
             endeZähler = 0;
             letzerEndeZählScore = 0;
-            letzterAußenWandScore = 0;
             richtung = Richtung.OBEN;
             position = new Position(Zeichner.PIXEL_BREITE / 2, Zeichner.PIXEL_BREITE / 2);
             score = 0;
