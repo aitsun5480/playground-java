@@ -48,6 +48,10 @@ public class Knyacki {
                     for (int spaltenZähler = 0; spaltenZähler < Zeichner.PIXEL_BREITE; spaltenZähler++) {
                         for (int reihenZähler = 0; reihenZähler < Zeichner.PIXEL_BREITE; reihenZähler++) {
                             if (spaltenZähler < außenWandDicke || reihenZähler < außenWandDicke || spaltenZähler > Zeichner.PIXEL_BREITE - außenWandDicke - 1 || reihenZähler > Zeichner.PIXEL_BREITE - außenWandDicke - 1) {
+                                if(felder[spaltenZähler][reihenZähler] == Feld.KOPF){
+                                    istGameOver =true;
+                                    Lautsprecher.abspielen("GameOver", 6);
+                                }
                                 Zeichner.bildSkizzieren(spaltenZähler, reihenZähler, "Wand");
                                 felder[spaltenZähler][reihenZähler] = Feld.WAND;
                             }
@@ -125,9 +129,6 @@ public class Knyacki {
     }
 
     private static void bewegen() {
-        if (schwanz.peek() == null || !schwanz.peek().equals(position)) {
-            schwanz.add(new Position(position.x, position.y));
-        }
         int neuePosX = position.x;
         int neuePosY = position.y;
 
@@ -177,7 +178,9 @@ public class Knyacki {
         if (felder[neuePosX][neuePosY] == Feld.BAUEN) {
             for (int zähler = 0; zähler < 10 && schwanz.size() > 0; zähler++) {
                 Position schwanzSpitze = schwanz.poll();
-                Zeichner.pixelSkizzieren(schwanzSpitze.x, schwanzSpitze.y, null);
+                if (felder[schwanzSpitze.x][schwanzSpitze.y] == Feld.KÖRPER) {
+                    Zeichner.pixelSkizzieren(schwanzSpitze.x, schwanzSpitze.y, null);
+                }
                 felder[schwanzSpitze.x][schwanzSpitze.y] = null;
             }
 
@@ -187,6 +190,8 @@ public class Knyacki {
         if ((felder[neuePosX][neuePosY] == null || felder[neuePosX][neuePosY] == Feld.BAUEN)) {
             Zeichner.bildSkizzieren(position.x, position.y, "Körper");
             felder[position.x][position.y] = Feld.KÖRPER;
+            schwanz.add(new Position(position.x, position.y));
+
             position.x = neuePosX;
             position.y = neuePosY;
             Zeichner.bildSkizzieren(position.x, position.y, "Kopf");
