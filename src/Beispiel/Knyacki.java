@@ -44,20 +44,20 @@ public class Knyacki {
                 score++;
 
                 if (score - letzterAußenWandScore > 50) {
+                    Lautsprecher.abspielen("Bauen");
                     int außenWandDicke = (score / 50) + 1;
                     for (int spaltenZähler = 0; spaltenZähler < Zeichner.PIXEL_BREITE; spaltenZähler++) {
                         for (int reihenZähler = 0; reihenZähler < Zeichner.PIXEL_BREITE; reihenZähler++) {
                             if (spaltenZähler < außenWandDicke || reihenZähler < außenWandDicke || spaltenZähler > Zeichner.PIXEL_BREITE - außenWandDicke - 1 || reihenZähler > Zeichner.PIXEL_BREITE - außenWandDicke - 1) {
-                                if(felder[spaltenZähler][reihenZähler] == Feld.KOPF){
-                                    istGameOver =true;
+                                if (felder[spaltenZähler][reihenZähler] == Feld.KOPF) {
                                     Lautsprecher.abspielen("GameOver", 6);
+                                    istGameOver = true;
                                 }
                                 Zeichner.bildSkizzieren(spaltenZähler, reihenZähler, "Wand");
                                 felder[spaltenZähler][reihenZähler] = Feld.WAND;
                             }
                         }
                     }
-                    Lautsprecher.abspielen("Bauen");
                     letzterAußenWandScore = score;
                 }
             }
